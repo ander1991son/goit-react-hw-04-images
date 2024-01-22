@@ -17,50 +17,49 @@ export const App = () => {
   const API_URL = `https://pixabay.com/api/?key=${API_KEY}&per_page=12`;
 
   useEffect(() => {
+    const fetchImages = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await axios.get(`${API_URL}&q=${searchTerm}`);
+        setImages(response.data.hits);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (searchTerm !== '') {
       fetchImages();
     }
-  }, [searchTerm]);
+  }, [searchTerm, API_URL]);
 
   useEffect(() => {
+    const loadLocalStorageData = () => {
+      const storedSearchTerm = localStorage.getItem('searchTerm');
+      const storedImages = localStorage.getItem('images');
+
+      if (storedSearchTerm) {
+        setSearchTerm(storedSearchTerm);
+      }
+
+      if (storedImages) {
+        setImages(JSON.parse(storedImages));
+      }
+    };
+
     loadLocalStorageData();
   }, []);
 
-  // Guardar datos en localStorage cada vez que cambian searchTerm o images
   useEffect(() => {
+    const saveLocalStorageData = () => {
+      localStorage.setItem('searchTerm', searchTerm);
+      localStorage.setItem('images', JSON.stringify(images));
+    };
+
     saveLocalStorageData();
   }, [searchTerm, images]);
-
-  const loadLocalStorageData = () => {
-    const storedSearchTerm = localStorage.getItem('searchTerm');
-    const storedImages = localStorage.getItem('images');
-
-    if (storedSearchTerm) {
-      setSearchTerm(storedSearchTerm);
-    }
-
-    if (storedImages) {
-      setImages(JSON.parse(storedImages));
-    }
-  };
-
-  const saveLocalStorageData = () => {
-    localStorage.setItem('searchTerm', searchTerm);
-    localStorage.setItem('images', JSON.stringify(images));
-  };
-
-  const fetchImages = async () => {
-    setIsLoading(true);
-
-    try {
-      const response = await axios.get(`${API_URL}&q=${searchTerm}`);
-      setImages(response.data.hits);
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleLoadMore = async () => {
     setIsLoading(true);
