@@ -17,19 +17,21 @@ export const App = () => {
   const API_URL = `https://pixabay.com/api/?key=${API_KEY}&per_page=12`;
 
   useEffect(() => {
-    // Código a ejecutar cuando el componente se monta
-    loadLocalStorageData();
-  }, []);
-
-  useEffect(() => {
-    // Código a ejecutar cuando 'searchTerm' cambia
     if (searchTerm !== '') {
       fetchImages();
     }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    loadLocalStorageData();
   }, []);
 
+  // Guardar datos en localStorage cada vez que cambian searchTerm o images
+  useEffect(() => {
+    saveLocalStorageData();
+  }, [searchTerm, images]);
+
   const loadLocalStorageData = () => {
-    // Lógica para cargar datos desde el almacenamiento local
     const storedSearchTerm = localStorage.getItem('searchTerm');
     const storedImages = localStorage.getItem('images');
 
@@ -43,13 +45,11 @@ export const App = () => {
   };
 
   const saveLocalStorageData = () => {
-    // Lógica para guardar datos en el almacenamiento local
     localStorage.setItem('searchTerm', searchTerm);
     localStorage.setItem('images', JSON.stringify(images));
   };
 
   const fetchImages = async () => {
-    // Lógica para hacer la solicitud HTTP con axios y actualizar el estado 'images'
     setIsLoading(true);
 
     try {
@@ -63,7 +63,6 @@ export const App = () => {
   };
 
   const handleLoadMore = async () => {
-    // Lógica para cargar más imágenes
     setIsLoading(true);
 
     try {
@@ -79,26 +78,20 @@ export const App = () => {
   };
 
   const openModal = imageUrl => {
-    // Lógica para abrir el modal
     setIsModalOpen(true);
     setModalImageUrl(imageUrl);
   };
 
   const closeModal = () => {
-    // Lógica para cerrar el modal
     setIsModalOpen(false);
     setModalImageUrl('');
   };
 
-  // Otro código del componente, como renderizar JSX, manejar eventos, etc.
+  const handleOnchange = e => setSearchTerm(e.target.value);
 
   return (
-    // JSX que representa la estructura del componente
     <div>
-      <Searchbar
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
+      <Searchbar value={searchTerm} onChange={handleOnchange} />
       <Loader isLoading={isLoading} />
       <ImageGallery images={images} isOpen={openModal} onClose={closeModal} />
 

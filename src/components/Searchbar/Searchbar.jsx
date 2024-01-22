@@ -16,7 +16,10 @@ const Searchbar = ({ onChange }) => {
           type="text"
           value={value}
           placeholder="Search images and photos"
-          onChange={e => setValue(e.target.value)}
+          onChange={e => {
+            setValue(e.target.value);
+            onChange(e);
+          }}
         />
       </form>
     </header>
